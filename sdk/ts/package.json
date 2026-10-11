@@ -1,0 +1,26 @@
+{
+  "name": "lookwright",
+  "version": "0.1.0",
+  "description": "Headless Perception & 6DoF Motion Test Framework for Smart Glasses & Spatial AI — TypeScript SDK and CLI wrapper",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "lookwright": "dist/src/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "npm run build && node --test dist/test/*.test.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0"
+  }
+}
