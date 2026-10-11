@@ -9,6 +9,7 @@ runs on a plain Linux CI box.
 | | |
 |---|---|
 | Status | v0.1.0 — formats carry `"version": 1` ([SPEC.md](SPEC.md) is the SSOT) |
+| Docs | [daikiito-dk.github.io/Lookwright](https://daikiito-dk.github.io/Lookwright/) |
 | Language | Rust workspace + TypeScript SDK |
 | Rendering | Deterministic CPU rasterizer (no Vulkan/WebGPU/Mesa anywhere) |
 | License | MIT |
@@ -67,11 +68,13 @@ Typical output of a passing run:
 
 ```
 lookwright: walk-and-look
-A-01  PASS  ui_visible info-card: visible 5.30s of 8.00s (required 2.00s, coverage 0.97)
-A-02  PASS  gaze_focused tv: gaze on tv for 4.20s (required 1.00s)
+A-01  PASS  ui_visible info-card: visible 5.53s of 8.00s (required 2.00s, coverage 0.99)
+A-02  PASS  gaze_focused tv: gaze on tv for 4.43s (required 1.00s)
 A-03  PASS  anchor_drift info-card: max drift 0.0000m within 0.0100m
-A-04  PASS  event_fired gesture pinch: event gesture fired at t=5.000s
-A-05  PASS  golden_visual: 2 frame(s) within thresholds (...)
+A-03  PASS  anchor_drift hud-hint: max drift 0.0000m within 0.0100m
+A-04  PASS  event_fired pinch: event gesture fired at t=5.000s
+A-04  PASS  event_fired voice: event voice fired at t=6.800s
+A-05  PASS  golden_visual: 2 frame(s) within thresholds (worst mean_abs_diff 0.000, changed_pixel_ratio 0.00000)
 summary: 7 pass, 0 fail
 ```
 
@@ -134,18 +137,19 @@ never hand-edited.
 
 ```bash
 lookwright perception --world living_room --trajectory walk.json \
-  --at-sec 2.5 --format jsonld
+  --at-sec 1.0 --format jsonld
 ```
 
 ```json
 {
   "@type": "PerceptionFrame",
-  "t_sec": 2.5,
-  "camera": { "position_m": [0.5, 1.7, -1.1], "forward": [-0.94, -0.14, -0.31],
+  "schema": "lookwright/perception-frame@1",
+  "t_sec": 1.0,
+  "camera": { "position_m": [0.0, 1.74, -0.6], "forward": [0.0, -0.0436, -0.9990],
               "gaze_target": "tv" },
   "visible_objects": [
-    { "@type": "SpatialObject", "id": "tv", "label": "TV", "distance_m": 2.84,
-      "bbox_px": [180.5, 122.0, 420.25, 288.75],
+    { "@type": "SpatialObject", "id": "tv", "label": "TV", "distance_m": 4.32,
+      "bbox_px": [266.30, 186.86, 373.70, 246.78],
       "world_aabb_m": { "min_m": [-0.8, 0.85, -4.94], "max_m": [0.8, 1.75, -4.86] } }
   ]
 }

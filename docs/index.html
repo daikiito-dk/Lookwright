@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lookwright — Headless Perception &amp; 6DoF Motion Test Framework for Smart Glasses &amp; Spatial AI</title>
+<meta name="description" content="Playwright for spatial apps. Replay head and eye motion, assert what the wearer should see. No headset, no GPU, no display.">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #121821;
+    --panel2: #0e141c;
+    --line: #223041;
+    --fg: #d7e1ea;
+    --dim: #8fa1b3;
+    --accent: #00ccff;
+    --pass: #3ddc84;
+    --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.65 -apple-system, "Segoe UI", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(11,15,20,.92); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .wrap { display: flex; align-items: center; gap: 18px; height: 56px; }
+  .logo { font: 700 18px var(--mono); color: var(--fg); }
+  .logo b { color: var(--accent); }
+  nav { margin-left: auto; display: flex; gap: 16px; align-items: center; font-size: 14px; }
+  nav a { color: var(--dim); }
+  nav a:hover { color: var(--accent); }
+  #lang {
+    background: var(--panel); color: var(--fg); border: 1px solid var(--line);
+    border-radius: 6px; padding: 4px 10px; font: 600 12px var(--mono); cursor: pointer;
+  }
+  #lang:hover { border-color: var(--accent); }
+  .hero { padding: 72px 0 40px; }
+  .hero h1 { font: 700 44px/1.15 var(--mono); margin: 0 0 14px; letter-spacing: -1px; }
+  .hero h1 b { color: var(--accent); }
+  .hero p.tag { font-size: 19px; color: var(--dim); max-width: 720px; margin: 0 0 22px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
+  .badge {
+    font: 600 12px var(--mono); color: var(--dim);
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px;
+  }
+  .badge.g { color: var(--pass); border-color: var(--pass); }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    font: 600 14px var(--mono); padding: 10px 18px; border-radius: 8px;
+    border: 1px solid var(--accent); color: var(--accent);
+  }
+  .btn:hover { background: rgba(0,204,255,.08); text-decoration: none; }
+  .btn.ghost { border-color: var(--line); color: var(--dim); }
+  section { padding: 34px 0; border-top: 1px solid var(--line); }
+  h2 { font: 700 24px var(--mono); margin: 0 0 14px; }
+  h2 .n { color: var(--accent); margin-right: 10px; }
+  p.lead { color: var(--dim); max-width: 760px; }
+  pre {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 18px; overflow-x: auto; font: 13.5px/1.55 var(--mono); color: var(--fg);
+  }
+  pre .c { color: #5b6b7c; }
+  pre .p { color: var(--pass); }
+  pre .a { color: var(--accent); }
+  pre .k { color: #c792ea; }
+  code.inl { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font: 13px var(--mono); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 700 12px var(--mono); color: var(--dim); text-transform: uppercase; letter-spacing: .06em; }
+  td code { font: 13px var(--mono); color: var(--accent); }
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .frames figure { margin: 0; }
+  .frames img { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--panel2); image-rendering: pixelated; }
+  .frames figcaption { font: 12px var(--mono); color: var(--dim); margin-top: 6px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 760px) { .cols, .frames { grid-template-columns: 1fr; } .hero h1 { font-size: 32px; } }
+  footer { border-top: 1px solid var(--line); padding: 26px 0 46px; color: var(--dim); font-size: 13.5px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <span class="logo">look<b>wright</b></span>
+    <nav>
+      <a href="https://github.com/daikiito-dk/Lookwright">GitHub</a>
+      <a href="https://github.com/daikiito-dk/Lookwright/blob/main/SPEC.md" data-i18n="nav-spec">SPEC</a>
+      <a href="https://github.com/daikiito-dk/Lookwright/tree/main/examples" data-i18n="nav-ex">Examples</a>
+      <button id="lang" type="button">日本語</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1 data-i18n="hero-h">Headless testing for<br><b>smart glasses</b> &amp; spatial AI.</h1>
+    <p class="tag" data-i18n="hero-tag">Playwright for spatial apps. Describe how a wearer's head and eyes move, then assert what they should see — no headset, no GPU, no display. Runs on any CI box.</p>
+    <div class="badges">
+      <span class="badge g">190 tests green</span>
+      <span class="badge">v0.1.0 · MIT</span>
+      <span class="badge">CPU-only rasterizer</span>
+      <span class="badge">exit codes 0 / 1 / 2</span>
+    </div>
+    <div class="cta">
+      <a class="btn" href="https://github.com/daikiito-dk/Lookwright" data-i18n="cta-gh">View on GitHub</a>
+      <a class="btn ghost" href="https://github.com/daikiito-dk/Lookwright/blob/main/SPEC.md" data-i18n="cta-spec">Read the SPEC</a>
+    </div>
+  </div>
+
+  <section>
+    <h2><span class="n">01</span><span data-i18n="s1-h">Why</span></h2>
+    <p class="lead" data-i18n="s1-p">Testing smart-glasses apps (Ray-Ban Meta, Orion, Horizon OS) normally means wearing a headset and walking around. That does not fit CI. Lookwright replays head motion and gaze from a data file, renders the scene and your spatial UI on the CPU, and turns “does the UI stay anchored while the wearer walks and looks around?” into a repeatable red/green test. The same simulation emits a structured perception feed you can pipe into a contextual AI agent and unit-test its decisions.</p>
+    <pre><span class="c">┌────────────────────────────────────────────────────────┐</span>
+<span class="c">│             CLI / GitHub Actions Runner                │</span>
+<span class="c">│        lookwright test · golden · perception           │</span>
+<span class="c">└───────────────────────────┬────────────────────────────┘</span>
+<span class="c">                            │</span>
+<span class="c">┌───────────────────────────▼────────────────────────────┐</span>
+<span class="c">│                    Lookwright Core                     │</span>
+<span class="c">│  - Trajectory Engine (6DoF head / eye motion)          │</span>
+<span class="c">│  - UI Anchor Engine (World Lock / Head Lock)           │</span>
+<span class="c">│  - Deterministic CPU Renderer (no GPU)                 │</span>
+<span class="c">│  - Spatial Perception Mock (BBox, Depth, Gaze Ray)     │</span>
+<span class="c">└────────────┬───────────────────────────┬───────────────┘</span>
+<span class="c">             │                           │</span>
+<span class="c">┌────────────▼─────────────┐ ┌───────────▼───────────────┐</span>
+<span class="c">│  Spatial UI under test   │ │ Contextual AI under test  │</span>
+<span class="c">│  (anchors / layout)      │ │ (vision &amp; gaze prompts)   │</span>
+<span class="c">└──────────────────────────┘ └───────────────────────────┘</span></pre>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span><span data-i18n="s2-h">Quick start</span></h2>
+    <p class="lead" data-i18n="s2-p">Clone and run the shipped living-room scenario end to end. The wearer walks, looks left at the TV, pinches, and speaks — seven assertions check what the UI did.</p>
+    <pre><span class="c">$ </span>git clone https://github.com/daikiito-dk/Lookwright &amp;&amp; cd Lookwright
+<span class="c">$ </span>cargo run -p lookwright-cli -- test --config examples/tests/walk_and_look.test.json
+
+lookwright: walk-and-look
+<span class="a">A-01</span>  <span class="p">PASS</span>  ui_visible info-card: visible 5.53s of 8.00s (required 2.00s, coverage 0.99)
+<span class="a">A-02</span>  <span class="p">PASS</span>  gaze_focused tv: gaze on tv for 4.43s (required 1.00s)
+<span class="a">A-03</span>  <span class="p">PASS</span>  anchor_drift info-card: max drift 0.0000m within 0.0100m
+<span class="a">A-03</span>  <span class="p">PASS</span>  anchor_drift hud-hint: max drift 0.0000m within 0.0100m
+<span class="a">A-04</span>  <span class="p">PASS</span>  event_fired pinch: event gesture fired at t=5.000s
+<span class="a">A-04</span>  <span class="p">PASS</span>  event_fired voice: event voice fired at t=6.800s
+<span class="a">A-05</span>  <span class="p">PASS</span>  golden_visual: 2 frame(s) within thresholds (worst mean_abs_diff 0.000)
+summary: <span class="p">7 pass, 0 fail</span></pre>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span><span data-i18n="s3-h">What the wearer sees — golden frames</span></h2>
+    <p class="lead" data-i18n="s3-p">Visual regression without a GPU. The deterministic CPU rasterizer renders world + UI panels; frames are compared against generated goldens with thresholds, so cross-platform libm jitter never flakes CI.</p>
+    <div class="frames">
+      <figure>
+        <img src="assets/frame_1000.png" alt="Rendered frame at t=1.0s: living room with anchored info card">
+        <figcaption>frame_1000.png — t = 1.0 s</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/frame_5000.png" alt="Rendered frame at t=5.0s after head motion">
+        <figcaption>frame_5000.png — t = 5.0 s</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span><span data-i18n="s4-h">Assertions</span></h2>
+    <table>
+      <tr><th>Code</th><th><code>type</code></th><th data-i18n="s4-th">Passes when</th></tr>
+      <tr><td><code>A-01</code></td><td><code>ui_visible</code></td><td data-i18n="s4-a1">the panel stays visible for `duration_sec` (coverage ≥ `min_coverage`)</td></tr>
+      <tr><td><code>A-02</code></td><td><code>gaze_focused</code></td><td data-i18n="s4-a2">the gaze ray hits `target` for `duration_sec`</td></tr>
+      <tr><td><code>A-03</code></td><td><code>anchor_drift</code></td><td data-i18n="s4-a3">world/head-lock placement drift stays under `max_drift_m`</td></tr>
+      <tr><td><code>A-04</code></td><td><code>event_fired</code></td><td data-i18n="s4-a4">a gesture / voice / gaze event fired during the run</td></tr>
+      <tr><td><code>A-05</code></td><td><code>golden_visual</code></td><td data-i18n="s4-a5">rendered frames match golden PNGs within thresholds</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span><span data-i18n="s5-h">Perception feed for contextual AI</span></h2>
+    <p class="lead" data-i18n="s5-p">The same simulation dumps what a vision agent would receive: visible objects, 2D/3D bounding boxes, distances, and the gaze target — as JSON or JSON-LD. Feed it into your agent's prompt pipeline and assert on its output.</p>
+    <pre><span class="c">$ </span>lookwright perception --world living_room --trajectory walk.json --at-sec 1.0 --format jsonld
+
+{
+  <span class="k">"@type"</span>: <span class="a">"PerceptionFrame"</span>,
+  <span class="k">"schema"</span>: <span class="a">"lookwright/perception-frame@1"</span>,
+  <span class="k">"t_sec"</span>: 1.0,
+  <span class="k">"camera"</span>: {
+    <span class="k">"position_m"</span>: [0.0, 1.74, -0.6],
+    <span class="k">"forward"</span>: [0.0, -0.0436, -0.9990],
+    <span class="k">"gaze_target"</span>: <span class="a">"tv"</span>
+  },
+  <span class="k">"visible_objects"</span>: [
+    {
+      <span class="k">"@type"</span>: <span class="a">"SpatialObject"</span>,
+      <span class="k">"id"</span>: <span class="a">"tv"</span>, <span class="k">"label"</span>: <span class="a">"TV"</span>,
+      <span class="k">"distance_m"</span>: 4.32,
+      <span class="k">"bbox_px"</span>: [266.30, 186.86, 373.70, 246.78],
+      <span class="k">"world_aabb_m"</span>: { <span class="k">"min_m"</span>: [-0.8, 0.85, -4.94], <span class="k">"max_m"</span>: [0.8, 1.75, -4.86] }
+    }
+    <span class="c">// … 6 visible objects, sorted by distance</span>
+  ]
+}</pre>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span><span data-i18n="s6-h">CI &amp; SDK</span></h2>
+    <div class="cols">
+      <div>
+        <p class="lead" data-i18n="s6-p1">Drop into any pipeline. Exit codes: 0 pass, 1 assertion failure, 2 usage/validation error. Ships a GitHub Actions composite action and a CPU-only Docker image.</p>
+        <pre><span class="c"># your repo's workflow</span>
+- uses: daikiito-dk/Lookwright/examples/ci-github-action@main
+  with:
+    config: spatial/walk_and_look.test.json
+    junit: lookwright-junit.xml</pre>
+      </div>
+      <div>
+        <p class="lead" data-i18n="s6-p2">Drive it from Node with the zero-dependency TypeScript SDK, or via <code class="inl">npx lookwright</code>.</p>
+        <pre>import { runTest } from <span class="a">"lookwright"</span>;
+
+const { exitCode, report } =
+  runTest(<span class="a">"spatial/walk_and_look.test.json"</span>, {
+    reportPath: <span class="a">"report.json"</span>,
+  });</pre>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span data-i18n="foot">MIT licensed.</span>
+    <a href="https://github.com/daikiito-dk/Lookwright">daikiito-dk/Lookwright</a> ·
+    <a href="https://github.com/daikiito-dk/Lookwright/blob/main/SPEC.md">SPEC.md</a> ·
+    <a href="https://github.com/daikiito-dk/Lookwright/blob/main/README.ja.md" data-i18n="foot-ja">Japanese README</a>
+  </footer>
+</div>
+
+<script>
+const I18N = {
+  ja: {
+    "nav-spec": "仕様書",
+    "nav-ex": "サンプル",
+    "hero-h": 'スマートグラス & 空間AIのための<br><b>ヘッドレス</b>テスト。',
+    "hero-tag": "空間アプリのためのPlaywright。装着者の頭と目の動きをデータとして記述し、「何が見えるべきか」をアサート。ヘッドセットもGPUもディスプレイも不要。どんなCIマシンでも動きます。",
+    "cta-gh": "GitHubで見る",
+    "cta-spec": "仕様書を読む",
+    "s1-h": "なぜ必要か",
+    "s1-p": "スマートグラスアプリ（Ray-Ban Meta、Orion、Horizon OS）のテストは、普通はヘッドセットを被って歩き回ることを意味します。これはCIに載りません。Lookwrightは頭の動きと視線をデータファイルからリプレイし、シーンと空間UIをCPU上でレンダリングして、「歩き回って見回してもUIはアンカーされ続けるか？」を再現可能な赤/緑テストに変えます。同じシミュレーションが構造化された知覚フィードも出力するので、コンテキスチュアルAIエージェントに流し込み、その判断をユニットテストできます。",
+    "s2-h": "クイックスタート",
+    "s2-p": "クローンして同梱のリビングルームシナリオをエンドツーエンドで実行。装着者は歩き、左のTVを見て、ピンチし、話します — 7つのアサーションがUIの振る舞いを検査します。",
+    "s3-h": "装着者の見えるもの — ゴールデンフレーム",
+    "s3-p": "GPUなしのビジュアルリグレッション。決定論的CPUラスタライザがワールド+UIパネルを描画し、生成済みゴールデンと閾値比較。プラットフォーム間のlibm差でCIはフレークしません。",
+    "s4-h": "アサーション",
+    "s4-th": "パス条件",
+    "s4-a1": "パネルが `duration_sec` だけ可視（カバレッジ ≥ `min_coverage`）",
+    "s4-a2": "注視レイが `target` に `duration_sec` ヒット",
+    "s4-a3": "ワールド/ヘッドロックの配置ドリフトが `max_drift_m` 未満",
+    "s4-a4": "ジェスチャー/音声/注視イベントが実行中に発火",
+    "s4-a5": "レンダリング済みフレームがゴールデンPNGと閾値内で一致",
+    "s5-h": "コンテキスチュアルAIのための知覚フィード",
+    "s5-p": "同じシミュレーションが、視覚エージェントが受け取るはずの情報をダンプします: 可視オブジェクト、2D/3Dバウンディングボックス、距離、注視ターゲット — JSONまたはJSON-LDで。エージェントのプロンプトパイプラインに流し込み、その出力をアサートできます。",
+    "s6-h": "CI & SDK",
+    "s6-p1": "どんなパイプラインにもそのまま載ります。終了コード: 0 パス、1 アサーション失敗、2 用法/バリデーションエラー。GitHub ActionsコンポジットアクションとCPU専用Dockerイメージを同梱。",
+    "s6-p2": "ゼロ依存のTypeScript SDK、または npx lookwright でNodeから駆動できます。",
+    "foot": "MITライセンス。",
+    "foot-ja": "日本語README",
+  }
+};
+// English source strings live in the DOM; keep a copy so we can toggle back.
+const EN = {};
+document.querySelectorAll("[data-i18n]").forEach(el => { EN[el.dataset.i18n] = el.innerHTML; });
+
+function setLang(lang) {
+  document.documentElement.lang = lang;
+  document.getElementById("lang").textContent = lang === "en" ? "日本語" : "English";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    el.innerHTML = lang === "ja" ? (I18N.ja[key] ?? EN[key]) : EN[key];
+  });
+  try { localStorage.setItem("lw-lang", lang); } catch (e) {}
+}
+document.getElementById("lang").addEventListener("click", () => {
+  setLang(document.documentElement.lang === "ja" ? "en" : "ja");
+});
+let initial = "en";
+try {
+  const saved = localStorage.getItem("lw-lang");
+  initial = saved || ((navigator.language || "").startsWith("ja") ? "ja" : "en");
+} catch (e) {}
+setLang(initial === "ja" ? "ja" : "en");
+</script>
+</body>
+</html>
