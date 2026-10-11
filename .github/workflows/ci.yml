@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # rustup is preinstalled and honors rust-toolchain.toml (pinned 1.93.0,
+      # default profile includes rustfmt + clippy).
+      - name: Show toolchain
+        run: rustup show active-toolchain || true
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test --workspace
+      # Self-test: run the shipped example config through the real CLI and
+      # publish a JUnit report (dogfooding — SPEC.md §10).
+      - name: Self-test example config
+        run: |
+          cargo run -p lookwright-cli --release -- \
+            test --config examples/tests/walk_and_look.test.json \
+            --junit target/junit.xml --report target/report.json
+      - name: Upload JUnit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-report
+          path: target/junit.xml
+
+  sdk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sdk/ts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm test
