@@ -1,0 +1,12 @@
+[package]
+name = "lookwright-renderer"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "Deterministic CPU rasterizer, PNG codecs, and image diff for Lookwright"
+
+[dependencies]
+lookwright-core = { workspace = true }
+png = { workspace = true }

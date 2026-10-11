@@ -1,0 +1,22 @@
+[package]
+name = "lookwright-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "`lookwright` CLI: headless spatial-UI test runner and perception feed"
+
+[[bin]]
+name = "lookwright"
+path = "src/main.rs"
+
+[dependencies]
+lookwright-core = { workspace = true }
+lookwright-perception = { workspace = true }
+lookwright-renderer = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }

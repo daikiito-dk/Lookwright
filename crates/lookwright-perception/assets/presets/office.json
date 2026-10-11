@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "name": "Office",
+  "objects": [
+    { "id": "desk", "label": "Desk", "color": "#8a6642",
+      "geometry": { "box": { "center_m": [0.0, 0.72, -2.2], "size_m": [1.8, 0.04, 0.9] } } },
+    { "id": "monitor", "label": "Monitor", "color": "#101418",
+      "geometry": { "box": { "center_m": [0.0, 0.99, -2.5], "size_m": [0.62, 0.38, 0.03] } } },
+    { "id": "monitor_stand", "label": "Monitor stand", "color": "#2a2e33",
+      "geometry": { "box": { "center_m": [0.0, 0.77, -2.5], "size_m": [0.2, 0.06, 0.2] } } },
+    { "id": "keyboard", "label": "Keyboard", "color": "#45494f",
+      "geometry": { "box": { "center_m": [0.0, 0.75, -2.0], "size_m": [0.45, 0.02, 0.16] } } },
+    { "id": "chair", "label": "Chair", "color": "#33363b",
+      "geometry": { "box": { "center_m": [0.0, 0.45, -1.2], "size_m": [0.62, 0.9, 0.62] } } },
+    { "id": "whiteboard", "label": "Whiteboard", "color": "#e8e8e4",
+      "geometry": { "box": { "center_m": [-2.6, 1.5, -3.2], "size_m": [0.08, 1.2, 1.8] } } },
+    { "id": "cabinet", "label": "Cabinet", "color": "#6d6a63",
+      "geometry": { "box": { "center_m": [2.9, 0.6, -3.0], "size_m": [0.6, 1.2, 1.0] } } },
+    { "id": "printer", "label": "Printer", "color": "#b9b6ad",
+      "geometry": { "box": { "center_m": [2.4, 0.18, -2.4], "size_m": [0.45, 0.36, 0.4] } } },
+    { "id": "plant", "label": "Plant", "color": "#3f7d3f",
+      "geometry": { "box": { "center_m": [-2.8, 0.5, -1.0], "size_m": [0.7, 1.0, 0.7] } } },
+    { "id": "door", "label": "Door", "color": "#7a5230",
+      "geometry": { "box": { "center_m": [3.55, 1.05, 0.0], "size_m": [0.08, 2.1, 1.0] } } },
+    { "id": "bookshelf", "label": "Bookshelf", "color": "#6b4a2b",
+      "geometry": { "box": { "center_m": [-3.5, 1.0, -1.6], "size_m": [0.4, 2.0, 1.4] } } },
+    { "id": "ceiling_lamp", "label": "Ceiling lamp", "color": "#d9c58a",
+      "geometry": { "box": { "center_m": [0.0, 2.45, -2.0], "size_m": [0.6, 0.1, 0.6] } } }
+  ]
+}

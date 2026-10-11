@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "name": "faulty-anchor",
+  "world": "living_room",
+  "trajectory": "../trajectories/walk_and_look_left.json",
+  "ui": [
+    {
+      "id": "wobbly-card",
+      "size_m": [0.40, 0.25],
+      "anchor": { "mode": "world", "position_m": [0.0, 1.9, -3.4] },
+      "wobble": { "amplitude_m": 0.05, "frequency_hz": 0.5 }
+    }
+  ],
+  "assertions": [
+    { "type": "anchor_drift", "ui": "wobbly-card", "max_drift_m": 0.01 }
+  ]
+}

@@ -1,0 +1,36 @@
+name: "lookwright spatial tests"
+description: >-
+  Run Lookwright spatial-UI tests headlessly on GitHub Actions — no GPU,
+  no display, no headset (CPU rendering only).
+inputs:
+  config:
+    description: "Path (relative to the calling repo) of the Lookwright test config JSON."
+    required: true
+  junit:
+    description: "Where to write the JUnit XML report."
+    required: false
+    default: lookwright-junit.xml
+  lookwright-version:
+    description: "Git ref of the Lookwright repo to install from."
+    required: false
+    default: main
+runs:
+  using: "composite"
+  steps:
+    - name: Install Lookwright
+      shell: bash
+      run: |
+        set -euo pipefail
+        cargo install --git https://github.com/daikiito-dk/Lookwright \
+          --bin lookwright lookwright-cli
+    - name: Run spatial tests
+      shell: bash
+      run: |
+        set -euo pipefail
+        lookwright test --config "${{ inputs.config }}" --junit "${{ inputs.junit }}"
+    - name: Upload JUnit report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: lookwright-junit
+        path: ${{ inputs.junit }}

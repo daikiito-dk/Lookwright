@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "name": "walk-and-look",
+  "target": "ray-ban-meta",
+  "world": "living_room",
+  "trajectory": "../trajectories/walk_and_look_left.json",
+  "camera": { "fov_y_deg": 70.0, "near_m": 0.05, "far_m": 50.0 },
+  "resolution_px": [640, 400],
+  "sample_hz": 30.0,
+  "ui": [
+    {
+      "id": "info-card",
+      "size_m": [0.40, 0.25],
+      "color": "#00ccff",
+      "anchor": {
+        "mode": "world",
+        "position_m": [0.0, 1.9, -3.4],
+        "rotation_euler_ypr_deg": [0, 0, 0]
+      }
+    },
+    {
+      "id": "hud-hint",
+      "size_m": [0.30, 0.15],
+      "color": "#ffd166",
+      "anchor": { "mode": "head", "offset_m": [0.0, -0.20, -1.20] }
+    }
+  ],
+  "assertions": [
+    { "type": "ui_visible", "ui": "info-card", "duration_sec": 2.0, "min_coverage": 0.5 },
+    { "type": "gaze_focused", "target": "tv", "duration_sec": 1.0 },
+    { "type": "anchor_drift", "ui": "info-card", "max_drift_m": 0.01 },
+    { "type": "anchor_drift", "ui": "hud-hint", "max_drift_m": 0.01 },
+    { "type": "event_fired", "event": "gesture", "name": "pinch" },
+    { "type": "event_fired", "event": "voice" },
+    {
+      "type": "golden_visual",
+      "dir": "../golden/walk_and_look",
+      "times_sec": [1.0, 5.0],
+      "max_mean_abs_diff": 1.5,
+      "max_changed_pixel_ratio": 0.02
+    }
+  ]
+}

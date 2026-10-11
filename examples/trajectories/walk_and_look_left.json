@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "duration_sec": 8.0,
+  "head": [
+    { "t_sec": 0.0, "position_m": [0.0, 1.70, 0.0], "rotation_euler_ypr_deg": [0, 0, 0] },
+    { "t_sec": 1.0, "position_m": [0.0, 1.74, -0.6], "rotation_euler_ypr_deg": [0, 0, 0] },
+    { "t_sec": 2.0, "position_m": [0.0, 1.70, -1.2], "rotation_euler_ypr_deg": [0, 0, 0] },
+    { "t_sec": 3.0, "position_m": [0.0, 1.72, -1.5], "rotation_euler_ypr_deg": [40, 0, 0] },
+    { "t_sec": 4.0, "position_m": [0.0, 1.70, -1.5], "rotation_euler_ypr_deg": [85, 0, 0] },
+    { "t_sec": 5.5, "position_m": [0.0, 1.74, -1.5], "rotation_euler_ypr_deg": [85, 0, 0] },
+    { "t_sec": 6.0, "position_m": [0.0, 1.70, -1.8], "rotation_euler_ypr_deg": [0, 0, 0] },
+    { "t_sec": 8.0, "position_m": [0.2, 1.70, -2.6], "rotation_euler_ypr_deg": [0, 0, 0] }
+  ],
+  "gaze": [
+    { "t_sec": 0.0, "yaw_deg": 0.0, "pitch_deg": -3.0 },
+    { "t_sec": 2.0, "yaw_deg": 0.0, "pitch_deg": -2.0 },
+    { "t_sec": 3.5, "yaw_deg": 0.0, "pitch_deg": -5.0 },
+    { "t_sec": 6.0, "yaw_deg": 0.0, "pitch_deg": 0.0 }
+  ],
+  "events": [
+    { "t_sec": 1.5, "type": "gaze_at", "target": "tv" },
+    { "t_sec": 5.0, "type": "gesture", "name": "pinch" },
+    { "t_sec": 6.8, "type": "voice", "transcript": "what am I looking at?" }
+  ]
+}
