@@ -1,0 +1,6 @@
+/target
+/sdk/ts/node_modules/
+/sdk/ts/dist/
+/scratch/
+*.log
+.DS_Store
