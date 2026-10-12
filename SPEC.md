@@ -486,7 +486,10 @@ pub fn diff(a: &Frame, b: &Frame) -> std::io::Result<DiffMetrics>;
 
 - npm package `lookwright`; `npx lookwright …` forwards args to the native
   binary. Binary resolution order: `$LOOKWRIGHT_BIN` → `lookwright` on PATH →
-  error with install instructions (no silent downloads in v0.1).
+  error with install instructions (no silent downloads in v0.1). The PATH
+  lookup skips Node scripts (a `#!…node` shebang), because under `npx`
+  `node_modules/.bin/lookwright` is the wrapper itself; spawning it would
+  recurse forever.
 - `runTest(configPath, { bin, reportPath, junitPath })` →
   `{ exitCode: 0|1, report }` with `report` typed per §11 (exit code 2 raises).
 - TS types mirror the JSON schemas exactly (field-for-field, same names).

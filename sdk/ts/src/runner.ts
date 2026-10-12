@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { accessSync, closeSync, constants, openSync, readFileSync, readSync } from "node:fs";
+import { delimiter, join } from "node:path";
 import type { Report } from "./types.js";
 
 /** Options for {@link runTest}. */
@@ -31,9 +32,51 @@ const BINARY_NOT_FOUND =
 /**
  * Binary resolution order (SPEC §14): explicit override → `$LOOKWRIGHT_BIN` →
  * `lookwright` on PATH. No silent downloads in v0.1.
+ *
+ * The PATH lookup skips Node scripts: under `npx`, `node_modules/.bin` comes
+ * first on PATH and its `lookwright` is this wrapper, so spawning the bare name
+ * would make the wrapper spawn itself forever. Returns `undefined` when no
+ * native binary is found.
  */
-export function resolveLookwrightBin(explicit?: string): string {
-  return explicit ?? process.env.LOOKWRIGHT_BIN ?? "lookwright";
+export function resolveLookwrightBin(explicit?: string): string | undefined {
+  if (explicit !== undefined) return explicit;
+  if (process.env.LOOKWRIGHT_BIN !== undefined) return process.env.LOOKWRIGHT_BIN;
+  return process.platform === "win32" ? "lookwright" : findNativeOnPath();
+}
+
+/**
+ * First `lookwright` on PATH that is not a Node script. On Windows, spawn
+ * without a shell only runs `.exe`, so npm's `.cmd` shim cannot be picked up
+ * and the plain name is left to the OS.
+ */
+export function findNativeOnPath(pathEnv: string = process.env.PATH ?? ""): string | undefined {
+  if (process.platform === "win32") return undefined;
+  for (const dir of pathEnv.split(delimiter)) {
+    if (!dir) continue;
+    const candidate = join(dir, "lookwright");
+    try {
+      accessSync(candidate, constants.X_OK);
+    } catch {
+      continue;
+    }
+    if (!isNodeScript(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+function isNodeScript(file: string): boolean {
+  let fd: number | undefined;
+  try {
+    fd = openSync(file, "r");
+    const head = Buffer.alloc(128);
+    const n = readSync(fd, head, 0, head.length, 0);
+    const firstLine = head.subarray(0, n).toString("utf8").split("\n")[0];
+    return firstLine.startsWith("#!") && firstLine.includes("node");
+  } catch {
+    return false;
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+  }
 }
 
 function parseReportFile(reportPath: string): Report | null {
@@ -67,7 +110,12 @@ export function runTest(configPath: string, opts: RunOptions = {}): RunResult {
   if (opts.reportPath !== undefined) args.push("--report", opts.reportPath);
   if (opts.junitPath !== undefined) args.push("--junit", opts.junitPath);
 
-  const proc = spawnSync(resolveLookwrightBin(opts.bin), args, {
+  const bin = resolveLookwrightBin(opts.bin);
+  if (bin === undefined) {
+    throw new Error(BINARY_NOT_FOUND);
+  }
+
+  const proc = spawnSync(bin, args, {
     encoding: "utf8",
     cwd: opts.cwd,
   });

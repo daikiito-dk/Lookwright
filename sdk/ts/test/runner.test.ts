@@ -6,13 +6,14 @@ import {
   mkdtempSync,
   readFileSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { runTest } from "../src/runner.js";
+import { findNativeOnPath, runTest } from "../src/runner.js";
 
 // The suite never depends on the Rust binary: stubs stand in for the CLI.
 
@@ -182,4 +183,63 @@ test("CLI wrapper exits 2 with the install hint when the binary is missing", () 
     proc.stderr ?? "",
     /cargo install --git https:\/\/github\.com\/daikiito-dk\/Lookwright lookwright-cli/,
   );
+});
+
+// Under `npx`, node_modules/.bin (holding this wrapper as `lookwright`) comes
+// first on PATH. The wrapper must skip itself and find the native binary.
+const skipPosix = process.platform === "win32";
+
+/** A directory whose `lookwright` is a symlink to the wrapper, as npm installs it. */
+function wrapperBinDir(): string {
+  const dir = join(tmp, "node-modules-bin");
+  mkdirSync(dir, { recursive: true });
+  try {
+    symlinkSync(cliJs, join(dir, "lookwright"));
+  } catch {
+    // already created by an earlier test
+  }
+  chmodSync(cliJs, 0o755);
+  return dir;
+}
+
+/** A directory whose `lookwright` is a non-Node executable standing in for the native CLI. */
+function nativeBinDir(): string {
+  const dir = join(tmp, "native-bin");
+  mkdirSync(dir, { recursive: true });
+  const bin = join(dir, "lookwright");
+  writeFileSync(bin, "#!/bin/sh\necho native-lookwright \"$@\"\nexit 0\n", "utf8");
+  chmodSync(bin, 0o755);
+  return dir;
+}
+
+test("findNativeOnPath skips the Node wrapper and returns the native binary behind it", { skip: skipPosix }, () => {
+  const pathEnv = [wrapperBinDir(), nativeBinDir()].join(delimiter);
+  assert.equal(findNativeOnPath(pathEnv), join(tmp, "native-bin", "lookwright"));
+});
+
+test("CLI wrapper does not spawn itself when its own bin dir comes first on PATH", { skip: skipPosix }, () => {
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    PATH: [wrapperBinDir(), nativeBinDir(), process.env.PATH ?? ""].join(delimiter),
+  };
+  delete env.LOOKWRIGHT_BIN;
+  const proc = spawnSync(process.execPath, [cliJs, "--version"], {
+    encoding: "utf8",
+    env,
+    timeout: 10_000,
+  });
+  assert.equal(proc.status, 0, proc.stderr);
+  assert.match(proc.stdout, /native-lookwright --version/);
+});
+
+test("CLI wrapper exits 2 when the only lookwright on PATH is the wrapper itself", { skip: skipPosix }, () => {
+  const env: NodeJS.ProcessEnv = { ...process.env, PATH: wrapperBinDir() };
+  delete env.LOOKWRIGHT_BIN;
+  const proc = spawnSync(process.execPath, [cliJs, "--version"], {
+    encoding: "utf8",
+    env,
+    timeout: 10_000,
+  });
+  assert.equal(proc.status, 2);
+  assert.match(proc.stderr ?? "", /lookwright binary not found on PATH\./);
 });

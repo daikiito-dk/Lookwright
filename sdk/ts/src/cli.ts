@@ -5,15 +5,20 @@
 import { spawnSync } from "node:child_process";
 import { resolveLookwrightBin } from "./runner.js";
 
-const proc = spawnSync(resolveLookwrightBin(), process.argv.slice(2), {
-  stdio: "inherit",
-});
-
-if (proc.error) {
+function notFound(): never {
   process.stderr.write(
     "lookwright binary not found on PATH. Install with `cargo install --git https://github.com/daikiito-dk/Lookwright lookwright-cli` or set LOOKWRIGHT_BIN.\n",
   );
   process.exit(2);
+}
+
+const bin = resolveLookwrightBin() ?? notFound();
+const proc = spawnSync(bin, process.argv.slice(2), {
+  stdio: "inherit",
+});
+
+if (proc.error) {
+  notFound();
 }
 
 // 0 pass, 1 assertion failure, 2 usage/validation error (SPEC §10).

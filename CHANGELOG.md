@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- TypeScript SDK: the `lookwright` PATH lookup now skips Node scripts. Under
+  `npx`, `node_modules/.bin` comes first on PATH, so the wrapper resolved to
+  itself and spawned itself without end; it now finds the native binary
+  behind it, or exits 2 with the install hint (SPEC §14).
+- Docs: README device examples corrected (Ray-Ban Display is a heads-up
+  display; Orion is an unreleased prototype), npm package marked as not yet
+  published, and a scope note added (tests a model of the UI and the AI's
+  input, not the app on a device).
+
 ## 0.1.0 (2026-10-11)
 
 Initial release.
