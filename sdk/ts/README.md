@@ -16,6 +16,21 @@ cargo install --git https://github.com/daikiito-dk/Lookwright lookwright-cli
 
 ## Install
 
+> **Not published to npm yet.** Until it is, build from the repository and set
+> `LOOKWRIGHT_BIN` to the native binary:
+>
+> ```bash
+> cargo build --release -p lookwright-cli
+> (cd sdk/ts && npm ci && npm run build)
+> LOOKWRIGHT_BIN="$PWD/target/release/lookwright" node sdk/ts/dist/src/cli.js --help
+> ```
+>
+> Set `LOOKWRIGHT_BIN` explicitly when the package is installed locally: with
+> `npx`, `node_modules/.bin` comes first on `PATH`, so a bare `lookwright` can
+> resolve to this wrapper instead of the native binary.
+
+Once published:
+
 ```bash
 npm install lookwright
 ```

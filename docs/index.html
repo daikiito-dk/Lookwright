@@ -115,7 +115,7 @@
 
   <section>
     <h2><span class="n">01</span><span data-i18n="s1-h">Why</span></h2>
-    <p class="lead" data-i18n="s1-p">Testing smart-glasses apps (Ray-Ban Meta, Orion, Horizon OS) normally means wearing a headset and walking around. That does not fit CI. Lookwright replays head motion and gaze from a data file, renders the scene and your spatial UI on the CPU, and turns “does the UI stay anchored while the wearer walks and looks around?” into a repeatable red/green test. The same simulation emits a structured perception feed you can pipe into a contextual AI agent and unit-test its decisions.</p>
+    <p class="lead" data-i18n="s1-p">Testing smart-glasses apps (heads-up displays like Ray-Ban Display, AR glasses like Snap Specs, Horizon OS headsets) normally means wearing the device and walking around. That does not fit CI. Lookwright replays head motion and gaze from a data file, renders the scene and your spatial UI on the CPU, and turns “does the UI stay anchored while the wearer walks and looks around?” into a repeatable red/green test. The same simulation emits a structured perception feed you can pipe into a contextual AI agent and unit-test its decisions.</p>
     <pre><span class="c">┌────────────────────────────────────────────────────────┐</span>
 <span class="c">│             CLI / GitHub Actions Runner                │</span>
 <span class="c">│        lookwright test · golden · perception           │</span>
@@ -218,7 +218,7 @@ summary: <span class="p">7 pass, 0 fail</span></pre>
     junit: lookwright-junit.xml</pre>
       </div>
       <div>
-        <p class="lead" data-i18n="s6-p2">Drive it from Node with the zero-dependency TypeScript SDK, or via <code class="inl">npx lookwright</code>.</p>
+        <p class="lead" data-i18n="s6-p2">Drive it from Node with the zero-dependency TypeScript SDK, or via <code class="inl">npx lookwright</code> once the npm package is published (build it from <code class="inl">sdk/ts</code> until then).</p>
         <pre>import { runTest } from <span class="a">"lookwright"</span>;
 
 const { exitCode, report } =
@@ -247,7 +247,7 @@ const I18N = {
     "cta-gh": "GitHubで見る",
     "cta-spec": "仕様書を読む",
     "s1-h": "なぜ必要か",
-    "s1-p": "スマートグラスアプリ（Ray-Ban Meta、Orion、Horizon OS）のテストは、普通はヘッドセットを被って歩き回ることを意味します。これはCIに載りません。Lookwrightは頭の動きと視線をデータファイルからリプレイし、シーンと空間UIをCPU上でレンダリングして、「歩き回って見回してもUIはアンカーされ続けるか？」を再現可能な赤/緑テストに変えます。同じシミュレーションが構造化された知覚フィードも出力するので、コンテキスチュアルAIエージェントに流し込み、その判断をユニットテストできます。",
+    "s1-p": "スマートグラスアプリ（Ray-Ban DisplayのようなHUD型、Snap SpecsのようなAR型、Horizon OSのヘッドセット）のテストは、普通は実機を装着して歩き回ることを意味します。これはCIに載りません。Lookwrightは頭の動きと視線をデータファイルからリプレイし、シーンと空間UIをCPU上でレンダリングして、「歩き回って見回してもUIはアンカーされ続けるか？」を再現可能な赤/緑テストに変えます。同じシミュレーションが構造化された知覚フィードも出力するので、コンテキスチュアルAIエージェントに流し込み、その判断をユニットテストできます。",
     "s2-h": "クイックスタート",
     "s2-p": "クローンして同梱のリビングルームシナリオをエンドツーエンドで実行。装着者は歩き、左のTVを見て、ピンチし、話します — 7つのアサーションがUIの振る舞いを検査します。",
     "s3-h": "装着者の見えるもの — ゴールデンフレーム",
@@ -263,7 +263,7 @@ const I18N = {
     "s5-p": "同じシミュレーションが、視覚エージェントが受け取るはずの情報をダンプします: 可視オブジェクト、2D/3Dバウンディングボックス、距離、注視ターゲット — JSONまたはJSON-LDで。エージェントのプロンプトパイプラインに流し込み、その出力をアサートできます。",
     "s6-h": "CI & SDK",
     "s6-p1": "どんなパイプラインにもそのまま載ります。終了コード: 0 パス、1 アサーション失敗、2 用法/バリデーションエラー。GitHub ActionsコンポジットアクションとCPU専用Dockerイメージを同梱。",
-    "s6-p2": "ゼロ依存のTypeScript SDK、または npx lookwright でNodeから駆動できます。",
+    "s6-p2": "ゼロ依存のTypeScript SDK、または npx lookwright(npm公開後。それまでは sdk/ts からビルド)でNodeから駆動できます。",
     "foot": "MITライセンス。",
     "foot-ja": "日本語README",
   }

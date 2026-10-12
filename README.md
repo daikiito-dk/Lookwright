@@ -16,8 +16,10 @@ runs on a plain Linux CI box.
 
 ## Why
 
-Testing smart-glasses apps (Ray-Ban Meta, Orion, Horizon OS devices) normally
-means wearing a $1,300+ headset and walking around. That does not fit CI.
+Testing smart-glasses apps — heads-up displays like Ray-Ban Display, AR
+glasses like Snap Specs, Horizon OS headsets — normally means wearing the
+device and walking around. Platform simulators help you try an app by hand,
+but none of that gives you a repeatable pass/fail check in CI.
 Lookwright replays head motion and gaze from a data file, renders the scene
 and your spatial UI on the CPU, and turns "does the UI stay anchored while
 the wearer walks and looks around?" into a repeatable test with a red/green
@@ -158,7 +160,23 @@ lookwright perception --world living_room --trajectory walk.json \
 Feed this into your agent's prompt pipeline and assert on its output — the
 "what is the wearer looking at?" logic becomes a unit test.
 
+**Scope:** Lookwright tests a model of your spatial UI (panels described in the
+test config) and produces the input your AI would see. It does not run your
+app on a device, and the worlds are synthetic, not camera footage.
+
 ## TypeScript SDK / npx
+
+> **The npm package is not published yet.** Until it is, build the SDK from
+> this repository and point it at the native binary with `$LOOKWRIGHT_BIN`:
+>
+> ```bash
+> cargo build --release -p lookwright-cli
+> (cd sdk/ts && npm ci && npm run build)
+> LOOKWRIGHT_BIN="$PWD/target/release/lookwright" \
+>   node sdk/ts/dist/src/cli.js test --config examples/tests/walk_and_look.test.json
+> ```
+
+Once published, usage will look like this:
 
 ```ts
 import { runTest } from "lookwright";

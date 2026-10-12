@@ -16,8 +16,10 @@
 
 ## なぜ必要か
 
-スマートグラスアプリ（Ray-Ban Meta、Orion、Horizon OSデバイス）のテストは、
-普通は15万円超のヘッドセットを被って歩き回ることを意味します。これはCIに載りません。
+スマートグラスアプリ（Ray-Ban DisplayのようなHUD型、Snap SpecsのようなAR型、
+Horizon OSのヘッドセット）のテストは、普通は実機を装着して歩き回ることを意味します。
+各プラットフォームのシミュレーターは手で試すには便利ですが、CIで合否を出す
+再現可能なテストにはなりません。
 Lookwrightは頭の動きと視線をデータファイルからリプレイし、シーンと空間UIを
 CPU上でレンダリングして、「装着者が歩き回って見回してもUIはアンカーされ続けるか？」を
 赤/緑の終了コードを持つ再現可能なテストに変えます。同じシミュレーションが構造化された
@@ -158,7 +160,23 @@ lookwright perception --world living_room --trajectory walk.json \
 これをエージェントのプロンプトパイプラインに流し込み、その出力をアサート。
 「装着者は何を見ているか？」のロジックがユニットテストになります。
 
+**対象範囲:** Lookwrightがテストするのは、テスト設定に書いた空間UIのモデルと、
+AIが受け取る入力です。実機上でアプリを動かすわけではなく、ワールドは合成で、
+カメラの実映像ではありません。
+
 ## TypeScript SDK / npx
+
+> **npmパッケージはまだ公開していません。** 公開までは、このリポジトリから
+> SDKをビルドし、`$LOOKWRIGHT_BIN` でネイティブバイナリを指定して使います:
+>
+> ```bash
+> cargo build --release -p lookwright-cli
+> (cd sdk/ts && npm ci && npm run build)
+> LOOKWRIGHT_BIN="$PWD/target/release/lookwright" \
+>   node sdk/ts/dist/src/cli.js test --config examples/tests/walk_and_look.test.json
+> ```
+
+公開後は次のように使えるようになります:
 
 ```ts
 import { runTest } from "lookwright";
